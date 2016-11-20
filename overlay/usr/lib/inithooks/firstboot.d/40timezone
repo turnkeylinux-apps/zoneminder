@@ -1,0 +1,7 @@
+#!/bin/bash -e
+# set zmuser database password non-interactive
+
+. /etc/default/inithooks
+
+[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
+$INITHOOKS_PATH/bin/timezone.py

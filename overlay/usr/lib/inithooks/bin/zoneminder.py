@@ -28,7 +28,6 @@ def main():
         usage(e)
 
     password = ""
-    email = ""
     for opt, val in opts:
         if opt in ('-h', '--help'):
             usage()

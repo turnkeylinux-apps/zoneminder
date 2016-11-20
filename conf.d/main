@@ -24,6 +24,7 @@ MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
 MYSQL_ADMIN="mysqladmin --user=root --password=$MYSQL_PASS"
 
 $MYSQL_BATCH < /usr/share/zoneminder/db/zm_create.sql
+#zmpass is changed at firstboot non-interactively (Secure At First Boot)
 $MYSQL_BATCH -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';"
 $MYSQL_ADMIN reload
 
@@ -52,7 +53,7 @@ a2enconf zoneminder
 cat /etc/timezone
 
 #Add lines to php.ini
-sed -i '894s/.*/date.timezone = America\/New_York/g' /etc/php5/apache2/php.ini
+sed -i '894s/.*/date.timezone = Etc\/UTC/g' /etc/php5/apache2/php.ini
 
 #Add debian backports for use when administering appliance
 echo 'deb http://http.debian.net/debian jessie-backports main' >> /etc/apt/sources.list
