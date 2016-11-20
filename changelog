@@ -1,0 +1,12 @@
+turnkey-zoneminder-14.1 (1) turnkey; urgency=low
+
+  * ZoneMinder:
+
+    - Initial Commit modified from lamp.
+
+    - Install ZoneMinder from repository
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Michael Gurevich <mg@tapbop.com>  Sun, 06 Nov 2016 14:22:31 EST

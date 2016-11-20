@@ -1,0 +1,7 @@
+Web Menu:       http://$ipaddr
+Web Menu:       https://$ipaddr
+ZoneMinder:     http://$ipaddr/zm
+ZoneMinder	https://$ipaddr/zm
+Web shell:      https://$ipaddr:12320
+Webmin:         https://$ipaddr:12321
+SSH/SFTP:       root@$ipaddr (port 22)
