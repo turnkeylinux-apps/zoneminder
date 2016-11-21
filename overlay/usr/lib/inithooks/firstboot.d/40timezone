@@ -4,4 +4,4 @@
 . /etc/default/inithooks
 
 [ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
-$INITHOOKS_PATH/bin/timezone.py
+$INITHOOKS_PATH/bin/timezone.py --tz="$TIME_ZONE"

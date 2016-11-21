@@ -1,5 +1,7 @@
 #!/usr/bin/python
-"""Set Timezone For System and ZoneMinder
+"""Set Timezone for ZoneMinder and System
+Option:
+    --pass=     unless provided, will ask interactively
 """
 
 import sys
@@ -30,14 +32,11 @@ def main():
             usage()
         elif opt == '--tz':
             timezone = val
-
     if not timezone:
-        d = Dialog('Turnkey Linux First Boot Configuration')
-        status = d.yesno("Set System Timezone For ZoneMinder Or Leave Default UTC","Selecting yes will launch tzselect from the command line")
-        if status == 1:
-   	    subprocess.call('bash /usr/lib/inithooks/bin/timezone.sh', shell=True)    
-	else:
-            d.msgbox("Your System Timezone and ZoneMinder Timezone will be UTC", "Select OK To Continue")        
+        subprocess.call('/usr/lib/inithooks/bin/timezone.sh', shell=True)
+    else:    
+        subprocess.call('/usr/lib/inithooks/bin/timezone.sh %s' % (str(timezone)), shell=True)
 
 if __name__ == "__main__":
     main()
+
