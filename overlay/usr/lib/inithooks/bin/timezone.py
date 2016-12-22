@@ -1,16 +1,14 @@
 #!/usr/bin/python
-"""Set Timezone for ZoneMinder and System
+"""Set TIMEZONE and Edit Config Files
 Option:
-    --pass=     unless provided, will ask interactively
+    --tz=     unless provided, will ask interactively
 """
 
 import sys
 import getopt
-import inithooks_cache
-import subprocess
 
+from executil import system
 from dialog_wrapper import Dialog
-
 
 def usage(s=None):
     if s:
@@ -26,17 +24,17 @@ def main():
     except getopt.GetoptError, e:
         usage(e)
 
-    timezone = ""
+    password = ""
     for opt, val in opts:
         if opt in ('-h', '--help'):
             usage()
         elif opt == '--tz':
             timezone = val
-    if not timezone:
-        subprocess.call('/usr/lib/inithooks/bin/timezone.sh', shell=True)
-    else:    
-        subprocess.call('/usr/lib/inithooks/bin/timezone.sh %s' % (str(timezone)), shell=True)
 
+    if not timezone:
+        timezone = 'Etc/UTC'
+    text = "date.timezone = " + timezone
+    system('sed', '-i', 's|.*date.*timezone.*=.*|%s|g' % text, '/etc/php5/apache2/php.ini')    
+    
 if __name__ == "__main__":
     main()
-

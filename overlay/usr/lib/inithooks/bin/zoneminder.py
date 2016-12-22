@@ -6,9 +6,8 @@ Option:
 
 import sys
 import getopt
-import inithooks_cache
-import subprocess
 
+from executil import system
 from dialog_wrapper import Dialog
 from mysqlconf import MySQL
 
@@ -42,8 +41,12 @@ def main():
 
     m = MySQL()
     m.execute('grant all on zm.* to zmuser@localhost identified by \"%s\";' % password)
-    subprocess.call('/usr/lib/inithooks/bin/zoneminder.sh %s' % (str(password)), shell=True)
+    
+    zmconf = "ZM_DB_PASS=" + password
+    dbconf = "		'password' =>" + password
+    
+    system('sed', '-i', 's|.*ZM_DB_PASS.*|%s|g' % zmconf, '/etc/zm/zm.conf')
+    system('sed', '-i', 's|.*password.*=>.*|%s|g' % dbconf, '/usr/share/zoneminder/www/api/app/Config/database.php')
 
 if __name__ == "__main__":
     main()
-
