@@ -1,5 +1,7 @@
 #!/bin/sh -ex
 
+SRC=/usr/local/src
+
 #ensure datafiles (eg. innodb) are created
 /etc/init.d/mysql start
 /etc/init.d/mysql stop
@@ -8,13 +10,8 @@
 cd /var/www/images
 find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -name "webmin.png" -delete
 
-#!/bin/sh -ex
-
-#Get latest repo for Zoneminder
-wget http://ftp.us.debian.org/debian/pool/main/z/zoneminder/zoneminder_1.29.0+dfsg-1~bpo8+1_amd64.deb -O /opt/zoneminder.deb
-
 #Install Zoneminder
-dpkg -i /opt/zoneminder.deb 
+dpkg -i $SRC/zone*.deb 
 
 #Start MySQL
 /etc/init.d/mysql start
@@ -48,12 +45,6 @@ systemctl status zoneminder.service
 a2enmod cgi
 a2enmod rewrite
 a2enconf zoneminder
-
-#Get Time Zone
-cat /etc/timezone
-
-#Add lines to php.ini
-sed -i '894s/.*/date.timezone = Etc\/UTC/g' /etc/php5/apache2/php.ini
 
 #Add debian backports for use when administering appliance
 echo 'deb http://http.debian.net/debian jessie-backports main' >> /etc/apt/sources.list

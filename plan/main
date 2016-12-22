@@ -10,7 +10,7 @@ libdbd-mysql-perl        # A Perl5 database interface to the MySQL database
 php5-xdebug
 php-pear
 php5-gd			
-
+jq			#For Parsing JSON on command line for TIMEZONE
 
 dbus			#Zoneminder Dependencies 
 javascript-common 

@@ -1,0 +1,14 @@
+#!/bin/bash -e
+# set zmuser database password non-interactive
+
+. /etc/default/inithooks
+
+curl http://ip-api.com/json > /opt/timezonedetected
+TIMEZONE=$(cat /opt/timezonedetected | jq -r '.timezone')
+if [ -z "$TIMEZONE" ]
+then 
+   TIMEZONE="Etc/UTC"
+fi
+
+[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
+$INITHOOKS_PATH/bin/timezone.py --tz="$TIMEZONE"
