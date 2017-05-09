@@ -1,20 +1,22 @@
 #!/bin/sh -ex
 
-SRC=/usr/local/src
-
-#ensure datafiles (eg. innodb) are created
-/etc/init.d/mysql start
-/etc/init.d/mysql stop
+install() {
+    apt-get update
+    DEBIAN_FRONTEND=noninteractive apt-get -y \
+        -o DPkg::Options::=--force-confdef \
+        -o DPkg::Options::=--force-confold \
+        install $@
+}
 
 # remove unrequired webcp icons (all except those named)
 cd /var/www/images
 find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -name "webmin.png" -delete
 
-#Install Zoneminder
-dpkg -i $SRC/zone*.deb 
+#Install Zoneminder (repo and pin in overlay)
+install zoneminder
 
 #Start MySQL
-/etc/init.d/mysql start
+service mysql start
 
 #Execute Zoneminder Install Script
 MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
@@ -44,18 +46,7 @@ systemctl status zoneminder.service
 #Enable apache mods
 a2enmod cgi
 a2enmod rewrite
-a2enconf zoneminder
-
-#Add debian backports for use when administering appliance
-echo 'deb http://http.debian.net/debian jessie-backports main' >> /etc/apt/sources.list
-
-#Update
-apt-get -y update
+a2ensite zoneminder
 
 #Change permissions in zoneminder folder
 chown -R www-data:www-data /usr/share/zoneminder/
-
-#Add lines to zoneminder.conf
-echo "<Directory /usr/share/zoneminder/www/api>
-    AllowOverride All
-</Directory>" >> /etc/apache2/conf-enabled/zoneminder.conf 

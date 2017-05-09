@@ -1,0 +1,4 @@
+Explanation: Pin ZoneMinder from backports
+Package: zoneminder
+Pin: release a=jessie-backports
+Pin-Priority: 500
