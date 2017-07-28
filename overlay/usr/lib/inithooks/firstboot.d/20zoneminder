@@ -1,9 +1,0 @@
-#!/bin/bash -e
-# set zmuser database password non-interactive
-
-. /etc/default/inithooks
-
-PASSWORD=$(mcookie)
-
-[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
-$INITHOOKS_PATH/bin/zoneminder.py --pass="$PASSWORD"
