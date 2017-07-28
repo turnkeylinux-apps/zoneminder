@@ -51,5 +51,8 @@ a2enmod cgi
 a2enmod rewrite
 a2ensite zoneminder
 
+#tweak default Apache site - to remove alias warning at start
+sed -i "/ScriptAlias/d" /etc/apache2/sites-available/000-default.conf
+
 #Change permissions in zoneminder folder
 chown -R www-data:www-data /usr/share/zoneminder/
