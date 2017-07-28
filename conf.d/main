@@ -28,7 +28,7 @@ $MYSQL_BATCH -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';
 $MYSQL_ADMIN reload
 
 # Enable authentication (i.e. force users to log in to ZM)
-$MYSQL_BATCH -e "update Config set Value=1 where Id=3 and Name='ZM_OPT_USE_AUTH';"
+$MYSQL_BATCH -e "update zm.Config set Value=1 where Id=3 and Name='ZM_OPT_USE_AUTH';"
 
 #Permissions Editing
 chmod 740 /etc/zm/zm.conf
