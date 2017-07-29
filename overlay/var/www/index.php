@@ -34,7 +34,7 @@
                     <div>
                         <a href="https://<?php print
                         $_SERVER{'HTTP_HOST'}; ?>/zm"><img
-                        src="images/shell.png"/>ZoneMinder</a>
+                        src="img/logo.png"/>ZoneMinder</a>
                     </div>
 	            <div>
                         <a href="https://<?php print
@@ -55,8 +55,8 @@
 			  ZoneMinder</a>
                         </li>
                         <li><a
-                        href="https://github.com/MPTMG/ZoneMinder">
-                        TurnKey Mumble Repository</a>
+                        href="https://github.com/turnkeylinux-apps/zoneminder:">
+                        TurnKey Zoneminder Repository</a>
 			</li>
                     </ul>
 		</div>
