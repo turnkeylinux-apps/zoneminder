@@ -55,7 +55,7 @@
 			  ZoneMinder</a>
                         </li>
                         <li><a
-                        href="https://github.com/turnkeylinux-apps/zoneminder:">
+                        href="https://github.com/turnkeylinux-apps/zoneminder">
                         TurnKey Zoneminder Repository</a>
 			</li>
                     </ul>
