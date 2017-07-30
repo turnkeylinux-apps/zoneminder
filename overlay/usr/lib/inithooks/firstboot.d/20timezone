@@ -3,8 +3,7 @@
 
 . /etc/default/inithooks
 
-curl http://ip-api.com/json > /opt/timezonedetected
-TIMEZONE=$(cat /opt/timezonedetected | jq -r '.timezone')
+TIMEZONE=$(curl http://ip-api.com/line/?fields=timezone)
 if [ -z "$TIMEZONE" ]
 then 
    TIMEZONE="Etc/UTC"
