@@ -1,2 +1,2 @@
-# Jessie-backports - for Adminer v4.x & ZoneMinder
-deb http://httpredir.debian.org/debian jessie-backports main
+# Stretch-backports - for ZoneMinder
+deb http://httpredir.debian.org/debian stretch-backports main

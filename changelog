@@ -1,12 +1,12 @@
-turnkey-zoneminder-14.2 (1) turnkey; urgency=low
+turnkey-zoneminder-15.0 (1) turnkey; urgency=low
 
   * ZoneMinder:
 
     - Initial release of Zoneminder appliance, modified from LAMP.
-
-    - Installed ZoneMinder from Debian backports repository (v1.29.0).
+    - Installed ZoneMinder from Debian backports repository (v1.30.4).
+    [ unreleased v14.2: Michael Gurevich <mg@tapbop.com> ]
 
   * Note: Please refer to turnkey-core's changelog for changes common to all
     appliances. Here we only describe changes specific to this appliance.
 
- -- Michael Gurevich <mg@tapbop.com>  Sun, 07 May 2017 14:22:31 -0500
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Tue, 10 Jul 2018 15:43:48 +1000
