@@ -7,19 +7,19 @@ python-mysqldb           /* A Python interface to MySQL                         
 libapache2-mod-perl2     /* Integration of perl with the Apache2 web server      */
 libdbd-mysql-perl        /* A Perl5 database interface to the MySQL database     */
 
-php5-xdebug
+php-xdebug
 php-pear
-php5-gd
-
+php-gd
 
 /* Zoneminder Dependencies */
+
 dbus
 javascript-common
 libarchive-zip-perl
-libavcodec56
-libavformat56
-libavresample2
-libavutil54
+libavcodec57
+libavformat57
+libavresample3
+libavutil55
 libb-hooks-endofscope-perl
 libcap-ng0
 libcommon-sense-perl
@@ -48,7 +48,7 @@ libnamespace-clean-perl
 libnet-sftp-foreign-perl
 libnet-smtp-ssl-perl
 libogg0
-libopenjpeg5
+libopenjp2-7
 libopus0
 liborc-0.4-0
 libpackage-stash-perl
@@ -59,13 +59,12 @@ libpolkit-agent-1-0
 libpolkit-backend-1-0
 libpolkit-gobject-1-0
 libproxy-tools
-libproxy1
-libschroedinger-1.0-0
+libproxy1v5
 libspeex1
 libsub-exporter-progressive-perl
 libsub-identify-perl
 libsub-name-perl
-libswscale3
+libswscale4
 libsys-mmap-perl
 libtheora0
 libtry-tiny-perl
@@ -76,8 +75,8 @@ libvlc5
 libvlccore8
 libvorbis0a
 libvorbisenc2
-libvpx1
-libx264-142
+libvpx4
+libx264-148
 libxml-libxml-perl
 libxml-namespacesupport-perl
 libxml-sax-base-perl
