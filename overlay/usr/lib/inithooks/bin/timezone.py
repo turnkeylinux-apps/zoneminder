@@ -34,7 +34,7 @@ def main():
     if not timezone:
         timezone = 'Etc/UTC'
     text = "date.timezone = " + timezone
-    system('sed', '-i', 's|.*date.*timezone.*=.*|%s|g' % text, '/etc/php5/apache2/php.ini')    
-    system('service', 'apache2', 'restart')     
+    system('sed', '-i', 's|.*date.*timezone.*=.*|%s|g' % text, '/etc/php/7.0/apache2/php.ini')    
+    system('service', 'apache2', 'restart')
 if __name__ == "__main__":
     main()
