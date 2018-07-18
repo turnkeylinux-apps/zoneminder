@@ -13,6 +13,7 @@ php-gd
 
 /* Zoneminder Dependencies */
 
+php-apcu        /* required for API to function */
 dbus
 javascript-common
 libarchive-zip-perl
