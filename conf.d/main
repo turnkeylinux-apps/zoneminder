@@ -15,6 +15,15 @@ find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -na
 #Install Zoneminder (repo and pin in overlay)
 install zoneminder
 
+# Workaround to fix API (crud submodule not included)
+# fixed in Buster, but not yet in Stretch-backports
+ZM_CRUD=/usr/share/zoneminder/www/api/app/Plugin/Crud
+tar -xvf $SRC/crud.tar.gz -C $SRC
+mkdir -p $ZM_CRUD
+mv $SRC/crud-*/* $ZM_CRUD
+rm -rf $SRC/crud*
+chown -R www-data:www-data $(dirname $ZM_CRUD)
+
 #Start MySQL
 service mysql start
 
