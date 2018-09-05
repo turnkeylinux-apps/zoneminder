@@ -1,5 +1,5 @@
 ZoneMinder - Video Surveillance
-==============================
+===============================
 
 ZoneMinder_ is a full-featured, open source, state-of-the-art video
 surveillance software system. Monitor your home, office, or wherever you
@@ -43,4 +43,5 @@ Credentials *(passwords set at first boot)*
 
 .. _ZoneMinder: https://zoneminder.com/
 .. _TurnKey Core: https://www.turnkeylinux.org/core
-.. _Adminer: http://www.adminer.org/
+.. _Adminer: https://www.adminer.org/
+.. _Postfix: http://www.postfix.org/
