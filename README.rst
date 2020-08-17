@@ -25,6 +25,10 @@ and on top of that:
   applications (e.g., password recovery).
 - Webmin modules for configuring Apache2, PHP, MySQL and Postfix.
 
+**NOTE**: Zoneminder will continually log a lack of monitors until some
+are added, this is unlikely to be a significant issue to most users due
+to the fact most people will add monitors soon after install.
+
 Supervised Manual Zoneminder Update
 -----------------------------------
 
