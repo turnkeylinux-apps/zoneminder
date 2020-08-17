@@ -12,3 +12,6 @@ URL="https://github.com/FriendsOfCake/crud/archive/${SHA_SUM}.tar.gz"
 
 dl $URL $SRC
 mv ${SRC}/${SHA_SUM}.tar.gz ${SRC}/crud.tar.gz
+
+dl https://zmrepo.zoneminder.com/debian/archive-keyring.gpg /usr/share/keyrings
+cat /usr/share/keyrings/archive-keyring.gpg | gpg --dearmor > /usr/share/keyrings/zoneminder.gpg

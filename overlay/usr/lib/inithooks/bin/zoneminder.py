@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """Set Zoneminder admin password
 
 Option:
@@ -14,16 +14,16 @@ from mysqlconf import MySQL
 
 def usage(s=None):
     if s:
-        print >> sys.stderr, "Error:", s
-    print >> sys.stderr, "Syntax: %s [options]" % sys.argv[0]
-    print >> sys.stderr, __doc__
+        print("Error:", s, file=sys.stderr)
+    print("Syntax: %s [options]" % sys.argv[0], file=sys.stderr)
+    print(__doc__, file=sys.stderr)
     sys.exit(1)
 
 def main():
     try:
         opts, args = getopt.gnu_getopt(sys.argv[1:], "h",
                                        ['help', 'pass='])
-    except getopt.GetoptError, e:
+    except getopt.GetoptError as e:
         usage(e)
 
     password = ""
@@ -40,7 +40,7 @@ def main():
             "Enter new password for the Zoneminder 'admin' account.")
 
     m = MySQL()
-    m.execute('UPDATE zm.Users SET Password=PASSWORD(\"%s\") WHERE Username=\"admin\";' % password)
+    m.execute('UPDATE zm.Users SET Password=PASSWORD(%s) WHERE Username=\"admin\";', (password,))
 
 if __name__ == "__main__":
     main()
