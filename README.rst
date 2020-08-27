@@ -11,7 +11,7 @@ and on top of that:
 
 - ZoneMinder configurations:
 
-  - ZoneMinder installed from Debian backports apt repository.
+  - ZoneMinder installed from 3rd party Debian apt repository.
   - ZoneMinder package pinned (security and convenience).
 
     **Security note**: Updates to ZoneMinder may require supervision so
@@ -43,7 +43,7 @@ Credentials *(passwords set at first boot)*
 
 -  Webmin, SSH, MySQL: username **root**
 -  Adminer: username **adminer**
--  ZoneMinder credentials set during configuration
+-  ZoneMinder: username **admin**
 
 .. _ZoneMinder: https://zoneminder.com/
 .. _TurnKey Core: https://www.turnkeylinux.org/core
