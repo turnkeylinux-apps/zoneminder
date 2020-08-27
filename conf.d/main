@@ -50,7 +50,7 @@ mv /usr/bin/systemctl.orig /usr/bin/systemctl
 service apache2 stop
 
 # Enable authentication (i.e. force users to log in to ZM)
-$MYSQL_BATCH -e "update zm.Config set Value=1 where Id=3 and Name='ZM_OPT_USE_AUTH';"
+$MYSQL_BATCH -e "update zm.Config set Value=1 where Name='ZM_OPT_USE_AUTH';"
 
 #Permissions Editing
 chmod 740 /etc/zm/zm.conf
