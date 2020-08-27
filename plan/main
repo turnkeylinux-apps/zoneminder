@@ -2,7 +2,6 @@
 #include <turnkey/lamp>
 
 libapache2-mod-python    /* Apache 2 module that embeds Python within the server */
-python-mysqldb           /* A Python interface to MySQL                          */
 
 libapache2-mod-perl2     /* Integration of perl with the Apache2 web server      */
 libdbd-mysql-perl        /* A Perl5 database interface to the MySQL database     */
@@ -17,10 +16,7 @@ php-apcu        /* required for API to function */
 dbus
 javascript-common
 libarchive-zip-perl
-libavcodec57
-libavformat57
-libavresample3
-libavutil55
+ffmpeg
 libb-hooks-endofscope-perl
 libcap-ng0
 libcommon-sense-perl
@@ -65,19 +61,14 @@ libspeex1
 libsub-exporter-progressive-perl
 libsub-identify-perl
 libsub-name-perl
-libswscale4
 libsys-mmap-perl
 libtheora0
 libtry-tiny-perl
 liburi-encode-perl
-libva1
 libvariable-magic-perl
 libvlc5
-libvlccore8
 libvorbis0a
 libvorbisenc2
-libvpx4
-libx264-148
 libxml-libxml-perl
 libxml-namespacesupport-perl
 libxml-sax-base-perl

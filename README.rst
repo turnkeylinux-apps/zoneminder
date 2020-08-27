@@ -11,7 +11,7 @@ and on top of that:
 
 - ZoneMinder configurations:
 
-  - ZoneMinder installed from Debian backports apt repository.
+  - ZoneMinder installed from 3rd party Debian apt repository.
   - ZoneMinder package pinned (security and convenience).
 
     **Security note**: Updates to ZoneMinder may require supervision so
@@ -24,6 +24,10 @@ and on top of that:
 - `Postfix`_ MTA (bound to localhost) to allow sending of email from web
   applications (e.g., password recovery).
 - Webmin modules for configuring Apache2, PHP, MySQL and Postfix.
+
+**NOTE**: Zoneminder will continually log a lack of monitors until some
+are added, this is unlikely to be a significant issue to most users due
+to the fact most people will add monitors soon after install.
 
 Supervised Manual Zoneminder Update
 -----------------------------------
@@ -39,7 +43,7 @@ Credentials *(passwords set at first boot)*
 
 -  Webmin, SSH, MySQL: username **root**
 -  Adminer: username **adminer**
--  ZoneMinder credentials set during configuration
+-  ZoneMinder: username **admin**
 
 .. _ZoneMinder: https://zoneminder.com/
 .. _TurnKey Core: https://www.turnkeylinux.org/core
