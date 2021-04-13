@@ -1,3 +1,12 @@
+turnkey-zoneminder-16.1 (1) turnkey; urgency=low
+
+  * Install latest ZoneMinder via upstream apt repo: v1.34.23
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Stefan Davis <stefan@turnkeylinux.org>  Tue, 13 Apr 2021 19:51:11 +1000
+
 turnkey-zoneminder-16.0 (1) turnkey; urgency=low
 
   * Install latest ZoneMinder via upstream apt repo - v1.34.20.
