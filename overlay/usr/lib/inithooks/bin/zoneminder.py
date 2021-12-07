@@ -8,7 +8,7 @@ Option:
 import sys
 import getopt
 
-from dialog_wrapper import Dialog
+from libinithooks.dialog_wrapper import Dialog
 from mysqlconf import MySQL
 
 

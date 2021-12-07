@@ -1,2 +1,0 @@
-# Stretch-backports - for ZoneMinder
-deb [signed-by=/usr/share/keyrings/zoneminder.gpg] http://zmrepo.zoneminder.com/debian/release-1.34 buster/
