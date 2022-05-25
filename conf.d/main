@@ -16,7 +16,6 @@ find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -na
 ## used to ensure zonminder wont complain about apache conf & mysql not running
 a2enmod cgi
 a2enmod rewrite
-a2dissite 000-default
 a2enconf zoneminder
 service mysql start
 service apache2 start
