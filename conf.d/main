@@ -12,11 +12,11 @@ install() {
 cd /var/www/images
 find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -name "webmin.png" -delete
 
-
 ## used to ensure zonminder wont complain about apache conf & mysql not running
 a2enmod cgi
 a2enmod rewrite
-a2enconf zoneminder
+a2dissite 000-default
+a2ensite zoneminder
 service mysql start
 service apache2 start
 
@@ -37,6 +37,7 @@ mv /usr/bin/systemctl /usr/bin/systemctl.orig
 ln -s /usr/local/bin/systemctl /usr/bin
 #Install Zoneminder (repo and pin in overlay)
 install zoneminder
+a2enconf zoneminder
 rm /usr/bin/systemctl
 mv /usr/bin/systemctl.orig /usr/bin/systemctl
 
@@ -56,9 +57,3 @@ chown root:www-data /etc/zm/zm.conf
 
 #Add www-data to video
 adduser www-data video
-
-#tweak default Apache site - to remove alias warning at start
-sed -i "/ScriptAlias/d" /etc/apache2/sites-available/000-default.conf
-
-#Change permissions in zoneminder folder
-chown -R www-data:www-data /usr/share/zoneminder/
