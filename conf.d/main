@@ -17,24 +17,25 @@ a2enmod cgi
 a2enmod rewrite
 a2dissite 000-default
 a2ensite zoneminder
+a2ensite tkl-webcp-zm
 service mysql start
 service apache2 start
 
 #Execute Zoneminder Install Script
-MYSQL_BATCH="mysql --user=root --password=$MYSQL_PASS --batch"
-MYSQL_ADMIN="mysqladmin --user=root --password=$MYSQL_PASS"
+MYSQL_BATCH="mysql --batch"
 
 cat /usr/share/zoneminder/db/zm_create.sql | $MYSQL_BATCH
 
 #zmpass is changed at firstboot non-interactively (Secure At First Boot)
 $MYSQL_BATCH -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';"
-$MYSQL_ADMIN reload
+mysqladmin reload
 
 # Temporarily replace systemctl with our wrapper
 # since the zoneminder package uses a hardcoded path
 # to call it
 mv /usr/bin/systemctl /usr/bin/systemctl.orig
 ln -s /usr/local/bin/systemctl /usr/bin
+
 #Install Zoneminder (repo and pin in overlay)
 install zoneminder
 a2enconf zoneminder
