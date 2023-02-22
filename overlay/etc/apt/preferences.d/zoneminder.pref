@@ -1,0 +1,8 @@
+Package: *
+Pin: origin zmrepo.zoneminder.com
+Pin-Priority: 10
+
+Explanation: Pin ZoneMinder from 3rd party repos
+Package: zoneminder
+Pin: origin zmrepo.zoneminder.com
+Pin-Priority: 500
