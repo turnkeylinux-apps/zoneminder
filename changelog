@@ -1,11 +1,11 @@
 turnkey-zoneminder-17.2 (1) turnkey; urgency=low
 
-  * Install ZoneMinder v1.36.32 - closes #1791.
+  * Install ZoneMinder v1.36.33 - closes #1791.
     - revert to installing from upstream zmrepo apt repository.
 
   * Update Apache conf to ensure that API works - closes #1623.
 
- -- Jeremy Davis <jeremy@turnkeylinux.org>  Tue, 14 Feb 2023 07:36:23 +0000
+ -- Jeremy Davis <jeremy@turnkeylinux.org>  Tue, 28 Feb 2023 05:22:28 +0000
 
 turnkey-zoneminder-17.1 (1) turnkey; urgency=low
 
