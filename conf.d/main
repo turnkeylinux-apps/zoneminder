@@ -12,23 +12,14 @@ install() {
 cd /var/www/images
 find . -type f ! -name "adminer.png" ! -name "shell.png" ! -name "tab.png" ! -name "webmin.png" -delete
 
-## used to ensure zonminder wont complain about apache conf & mysql not running
 a2enmod cgi
 a2enmod rewrite
 a2dissite 000-default
 a2ensite zoneminder
 a2ensite tkl-webcp-zm
-service mysql start
 service apache2 start
 
-#Execute Zoneminder Install Script
 MYSQL_BATCH="mysql --batch"
-
-cat /usr/share/zoneminder/db/zm_create.sql | $MYSQL_BATCH
-
-#zmpass is changed at firstboot non-interactively (Secure At First Boot)
-$MYSQL_BATCH -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';"
-mysqladmin reload
 
 # Temporarily replace systemctl with our wrapper
 # since the zoneminder package uses a hardcoded path
@@ -44,6 +35,11 @@ mv /usr/bin/systemctl.orig /usr/bin/systemctl
 
 service apache2 stop
 
+service mysql start
+cat /usr/share/zoneminder/db/zm_create.sql | $MYSQL_BATCH
+
+# zmpass is changed at firstboot non-interactively (Secure At First Boot)
+$MYSQL_BATCH -e "grant all on zm.* to 'zmuser'@localhost identified by 'zmpass';"
 # Enable authentication (i.e. force users to log in to ZM)
 $MYSQL_BATCH -e "update zm.Config set Value=1 where Name='ZM_OPT_USE_AUTH';"
 
