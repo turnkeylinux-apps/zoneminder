@@ -1,3 +1,15 @@
+turnkey-zoneminder-18.0 (1) turnkey; urgency=low
+
+  * Install latest ZoneMinder v1.36.33.
+
+  * Updated all relevant Debian packages to Bookworm/12 versions; including
+    PHP 8.2.
+
+  * Note: Please refer to turnkey-core's changelog for changes common to all
+    appliances. Here we only describe changes specific to this appliance.
+
+ -- Anton Pyrogovskyi <anton@turnkeylinux.org>  Mon, 06 May 2024 19:07:44 +0200
+
 turnkey-zoneminder-17.2 (1) turnkey; urgency=low
 
   * Install ZoneMinder v1.36.33 - closes #1791.
