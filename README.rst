@@ -11,7 +11,7 @@ and on top of that:
 
 - ZoneMinder configurations:
 
-  - ZoneMinder installed from 3rd party Debian apt repository.
+  - ZoneMinder installed from the official ZoneMinder Debian apt repository.
   - ZoneMinder package pinned (security and convenience).
 
     **Security note**: Updates to ZoneMinder may require supervision so
@@ -32,8 +32,11 @@ to the fact most people will add monitors soon after install.
 Supervised Manual Zoneminder Update
 -----------------------------------
 
-To upgrade to the latest Debian backports version of ZoneMinder from the
-command line::
+To check the supervised ZoneMinder stable channel::
+
+    zoneminder-update --check
+
+To install a reported update from the command line::
 
     apt-get update
     apt-get install zoneminder

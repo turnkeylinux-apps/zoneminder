@@ -3,11 +3,8 @@
 
 . /etc/default/inithooks
 
-TIMEZONE=$(curl --silent --show-error http://ip-api.com/line/?fields=timezone)
-if [ -z "$TIMEZONE" ]
-then 
-   TIMEZONE="Etc/UTC"
-fi
+TIMEZONE=$(timedatectl show --property=Timezone --value)
+[ -n "$TIMEZONE" ] || TIMEZONE=Etc/UTC
 
-[ -e $INITHOOKS_CONF ] && . $INITHOOKS_CONF
+[ -e "$INITHOOKS_CONF" ] && . "$INITHOOKS_CONF"
 $INITHOOKS_PATH/bin/timezone.py --tz="$TIMEZONE"

@@ -1,10 +1,19 @@
 #!/bin/bash -ex
 
+KEY_URL=https://zmrepo.zoneminder.com/debian/archive-keyring.gpg
+KEY_SHA256=282e41d9156e2ad5541c1a3c5b9c3c05003f36019c4639f6ea92e8f891633c54
+KEY_FINGERPRINT=E148DCEBF90919B49C68F056A8C670C86F88B031
+
 dl() {
     [ "$FAB_HTTP_PROXY" ] && PROXY="--proxy $FAB_HTTP_PROXY"
     cd $2; curl -L -f -O $PROXY $1; cd -
 }
 
-dl https://zmrepo.zoneminder.com/debian/archive-keyring.gpg /usr/share/keyrings
-cat /usr/share/keyrings/archive-keyring.gpg | gpg --dearmor > /usr/share/keyrings/zoneminder.gpg
+dl "$KEY_URL" /usr/share/keyrings
+printf '%s  %s\n' "$KEY_SHA256" /usr/share/keyrings/archive-keyring.gpg | sha256sum -c -
+fingerprint=$(gpg --batch --show-keys --with-colons /usr/share/keyrings/archive-keyring.gpg |
+    awk -F: '$1 == "fpr" { print $10; exit }')
+[ "$fingerprint" = "$KEY_FINGERPRINT" ]
+gpg --batch --yes --dearmor --output /usr/share/keyrings/zoneminder.gpg \
+    /usr/share/keyrings/archive-keyring.gpg
 rm /usr/share/keyrings/archive-keyring.gpg
