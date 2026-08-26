@@ -48,10 +48,13 @@ printf '%s\n' "$installed_provenance" |
 
 admin_hash=$(mysql -Nse "SELECT Password FROM zm.Users WHERE Username='admin'")
 [ -n "$admin_hash" ] || fail "ZoneMinder admin account is missing"
+admin_api=$(mysql -Nse "SELECT APIEnabled FROM zm.Users WHERE Username='admin'")
+[ "$admin_api" = 1 ] || fail "ZoneMinder admin API access is disabled"
 ZM_ADMIN_PASS="$TKL_TEST_APP_PASS" ZM_ADMIN_HASH="$admin_hash" php -r '
     exit(password_verify(getenv("ZM_ADMIN_PASS"), getenv("ZM_ADMIN_HASH")) ? 0 : 1);
 ' || fail "firstboot ZoneMinder admin password does not match"
 unset admin_hash
+unset admin_api
 
 db_password=$(sed -n 's/^ZM_DB_PASS=//p' /etc/zm/zm.conf)
 [ -n "$db_password" ] || fail "ZoneMinder database password is missing"

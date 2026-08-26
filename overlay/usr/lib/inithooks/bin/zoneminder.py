@@ -42,7 +42,8 @@ def main():
         ['php', '-r', 'echo password_hash(getenv("ZM_ADMIN_PASS"), PASSWORD_BCRYPT);'],
         env=hash_env, check=True, capture_output=True, text=True).stdout
     m = MySQL()
-    m.execute('UPDATE zm.Users SET Password=%s WHERE Username=\"admin\";',
+    m.execute('UPDATE zm.Users SET Password=%s, APIEnabled=1 '
+              'WHERE Username=\"admin\";',
               (password_hash,))
 
 if __name__ == "__main__":
