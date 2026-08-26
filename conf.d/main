@@ -5,12 +5,21 @@ ZM_PACKAGE_URL=https://zmrepo.zoneminder.com/debian/release-1.38/trixie/zonemind
 ZM_PACKAGE_SHA256=4828e9a0e86e2015701571cc443d37aae5e43fd4e270759c3f28463ae135f12e
 ZM_KEY_FINGERPRINT=E148DCEBF90919B49C68F056A8C670C86F88B031
 
-install() {
+apt_install() {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get -y \
         -o DPkg::Options::=--force-confdef \
         -o DPkg::Options::=--force-confold \
-        install $@
+        install "$@"
+}
+
+restore_systemctl() {
+    if [ -e /usr/bin/systemctl.orig ]; then
+        if [ -e /usr/bin/systemctl ] || [ -L /usr/bin/systemctl ]; then
+            rm /usr/bin/systemctl
+        fi
+        mv /usr/bin/systemctl.orig /usr/bin/systemctl
+    fi
 }
 
 # remove unrequired webcp icons (all except those named)
@@ -27,6 +36,8 @@ service apache2 start
 # Temporarily replace systemctl with our wrapper
 # since the zoneminder package uses a hardcoded path
 # to call it
+[ ! -e /usr/bin/systemctl.orig ]
+trap restore_systemctl EXIT
 mv /usr/bin/systemctl /usr/bin/systemctl.orig
 ln -s /usr/local/bin/systemctl /usr/bin
 
@@ -34,11 +45,14 @@ ln -s /usr/local/bin/systemctl /usr/bin
 # repository supplies dependencies and supervised updates.
 curl -fsSL "$ZM_PACKAGE_URL" -o /tmp/zoneminder.deb
 printf '%s  %s\n' "$ZM_PACKAGE_SHA256" /tmp/zoneminder.deb | sha256sum -c -
-install /tmp/zoneminder.deb
+apt_install /tmp/zoneminder.deb
 [ "$(dpkg-query -W -f='${Version}' zoneminder)" = "$ZM_VERSION" ]
+candidate=$(apt-cache policy zoneminder | sed -n 's/^[[:space:]]*Candidate: //p')
+[ "$candidate" = "$ZM_VERSION" ]
 a2enconf zoneminder
-rm /usr/bin/systemctl
-mv /usr/bin/systemctl.orig /usr/bin/systemctl
+restore_systemctl
+trap - EXIT
+rm /tmp/zoneminder.deb
 
 service apache2 stop
 
@@ -58,7 +72,7 @@ chown root:www-data /etc/zm/zm.conf
 #Add www-data to video
 adduser www-data video
 
-install -d /usr/local/share/turnkey-zoneminder
+/usr/bin/install -d /usr/local/share/turnkey-zoneminder
 cat > /usr/local/share/turnkey-zoneminder/source <<EOF
 package_source=official ZoneMinder release-1.38 Trixie apt repository
 installed_version=$ZM_VERSION

@@ -9,6 +9,8 @@ import getopt
 from pathlib import Path
 
 import subprocess
+
+
 def usage(s=None):
     if s:
         print("Error:", s, file=sys.stderr)
@@ -32,7 +34,13 @@ def main():
 
     if not timezone:
         timezone = 'Etc/UTC'
-    if not Path('/usr/share/zoneinfo', timezone).is_file():
+    zoneinfo_root = Path('/usr/share/zoneinfo').resolve()
+    timezone_path = (zoneinfo_root / timezone).resolve()
+    try:
+        timezone_path.relative_to(zoneinfo_root)
+    except ValueError:
+        usage("invalid timezone")
+    if Path(timezone).is_absolute() or not timezone_path.is_file():
         usage("invalid timezone")
     php_ini = list(Path('/etc/php').glob('*/apache2/php.ini'))
     if len(php_ini) != 1:
@@ -41,5 +49,7 @@ def main():
     subprocess.run(['sed', '-i', 's|.*date.*timezone.*=.*|%s|g' % text,
                     str(php_ini[0])], check=True)
     subprocess.run(['service', 'apache2', 'restart'], check=True)
+
+
 if __name__ == "__main__":
     main()
