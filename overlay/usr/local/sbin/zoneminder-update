@@ -1,7 +1,6 @@
 #!/bin/bash -e
 
-EXPECTED_FINGERPRINT=E148DCEBF90919B49C68F056A8C670C86F88B031
-SOURCE_RECORD=/usr/local/share/turnkey-zoneminder/source
+SOURCE_RECORD=${SOURCE_RECORD:-/usr/local/share/turnkey-zoneminder/source}
 
 [ "${1:-}" = --check ] || {
     echo "usage: zoneminder-update --check" >&2
@@ -11,14 +10,22 @@ SOURCE_RECORD=/usr/local/share/turnkey-zoneminder/source
 apt-get update -qq
 installed=$(dpkg-query -W -f='${Version}' zoneminder)
 candidate=$(apt-cache policy zoneminder | sed -n 's/^[[:space:]]*Candidate: //p')
-fingerprint=$(gpg --batch --show-keys --with-colons /usr/share/keyrings/zoneminder.gpg |
-    awk -F: '$1 == "fpr" { print $10; exit }')
-[ "$fingerprint" = "$EXPECTED_FINGERPRINT" ]
+index_targets=$(apt-get indextargets --format '$(IDENTIFIER)|$(SUITE)|$(RELEASE)|$(SITE)')
 [ -s "$SOURCE_RECORD" ]
+[ -n "$candidate" ] && [ "$candidate" != "(none)" ] || {
+    echo "no ZoneMinder candidate is available from configured repositories" >&2
+    exit 1
+}
+printf '%s\n' "$index_targets" |
+    grep -Eq '^(Packages|Translation-[^|]+)\|(trixie|trixie-updates|trixie-security)\|' || {
+        echo "no eligible Debian Trixie package index is configured" >&2
+        exit 1
+    }
 
 echo "installed=$installed"
 echo "candidate=$candidate"
-echo "channel=official release-1.38 trixie"
+echo "channel=Debian Trixie repositories"
+echo "metadata_signature_verification=apt-get-update-passed"
 if dpkg --compare-versions "$candidate" gt "$installed"; then
     echo "status=update-available"
 else

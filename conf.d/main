@@ -1,10 +1,5 @@
 #!/bin/bash -ex
 
-ZM_VERSION=1.38.4+trixie1
-ZM_PACKAGE_URL=https://zmrepo.zoneminder.com/debian/release-1.38/trixie/zoneminder_1.38.4+trixie1_amd64.deb
-ZM_PACKAGE_SHA256=4828e9a0e86e2015701571cc443d37aae5e43fd4e270759c3f28463ae135f12e
-ZM_KEY_FINGERPRINT=E148DCEBF90919B49C68F056A8C670C86F88B031
-
 install() {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get -y \
@@ -30,12 +25,9 @@ service apache2 start
 mv /usr/bin/systemctl /usr/bin/systemctl.orig
 ln -s /usr/local/bin/systemctl /usr/bin
 
-# Install the exact verified ZoneMinder package. The retained upstream apt
-# repository supplies dependencies and supervised updates.
-curl -fsSL "$ZM_PACKAGE_URL" -o /tmp/zoneminder.deb
-printf '%s  %s\n' "$ZM_PACKAGE_SHA256" /tmp/zoneminder.deb | sha256sum -c -
-install /tmp/zoneminder.deb
-[ "$(dpkg-query -W -f='${Version}' zoneminder)" = "$ZM_VERSION" ]
+# Install ZoneMinder from Debian Trixie. The temporary systemctl wrapper keeps
+# the package configuration path compatible with the build environment.
+install zoneminder
 a2enconf zoneminder
 rm /usr/bin/systemctl
 mv /usr/bin/systemctl.orig /usr/bin/systemctl
@@ -59,11 +51,10 @@ chown root:www-data /etc/zm/zm.conf
 adduser www-data video
 
 install -d /usr/local/share/turnkey-zoneminder
+installed_version=$(dpkg-query -W -f='${Version}' zoneminder)
 cat > /usr/local/share/turnkey-zoneminder/source <<EOF
-package_source=official ZoneMinder release-1.38 Trixie apt repository
-installed_version=$ZM_VERSION
-package_url=$ZM_PACKAGE_URL
-package_sha256=$ZM_PACKAGE_SHA256
-key_fingerprint=$ZM_KEY_FINGERPRINT
-repository=https://zmrepo.zoneminder.com/debian/release-1.38 trixie
+package_source=Debian Trixie repositories
+installed_version=$installed_version
+repository_suite=trixie
+integrity=Debian archive signature verification
 EOF

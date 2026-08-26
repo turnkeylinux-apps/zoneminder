@@ -11,12 +11,7 @@ and on top of that:
 
 - ZoneMinder configurations:
 
-  - ZoneMinder installed from the official ZoneMinder Debian apt repository.
-  - ZoneMinder package pinned (security and convenience).
-
-    **Security note**: Updates to ZoneMinder may require supervision so
-    they **ARE NOT** configured to install automatically. See below for
-    updating ZoneMinder.
+  - ZoneMinder installed from the Debian Trixie repositories.
 
 - SSL support out of the box.
 - `Adminer`_ administration frontend for MySQL (listening on port
@@ -29,10 +24,11 @@ and on top of that:
 are added, this is unlikely to be a significant issue to most users due
 to the fact most people will add monitors soon after install.
 
-Supervised Manual Zoneminder Update
------------------------------------
+ZoneMinder Package Updates
+--------------------------
 
-To check the supervised ZoneMinder stable channel::
+To compare the installed ZoneMinder package with the version available from
+the configured Debian Trixie repositories::
 
     zoneminder-update --check
 

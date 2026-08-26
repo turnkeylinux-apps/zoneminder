@@ -1,2 +1,0 @@
-# Official ZoneMinder release repository for Debian 13.
-deb [signed-by=/usr/share/keyrings/zoneminder.gpg] https://zmrepo.zoneminder.com/debian/release-1.38 trixie/
