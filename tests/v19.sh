@@ -45,6 +45,21 @@ installed_provenance=$(sed -n 's/^installed_provenance=//p' "$SOURCE_RECORD")
 printf '%s\n' "$installed_provenance" |
     grep -Eq ' (trixie|trixie-updates|trixie-security)/' ||
     fail "source record has no Debian Trixie package provenance"
+
+admin_hash=$(mysql -Nse "SELECT Password FROM zm.Users WHERE Username='admin'")
+[ -n "$admin_hash" ] || fail "ZoneMinder admin account is missing"
+ZM_ADMIN_PASS="$TKL_TEST_APP_PASS" ZM_ADMIN_HASH="$admin_hash" php -r '
+    exit(password_verify(getenv("ZM_ADMIN_PASS"), getenv("ZM_ADMIN_HASH")) ? 0 : 1);
+' || fail "firstboot ZoneMinder admin password does not match"
+unset admin_hash
+
+db_password=$(sed -n 's/^ZM_DB_PASS=//p' /etc/zm/zm.conf)
+[ -n "$db_password" ] || fail "ZoneMinder database password is missing"
+MYSQL_PWD="$db_password" mysql --user=zmuser -Nse \
+    "SELECT Username FROM Users WHERE Username='admin'" zm |
+    grep -qx admin || fail "ZoneMinder database credential does not work"
+unset db_password
+
 for service in apache2 mariadb zoneminder postfix; do
     systemctl -q is-enabled "$service" || fail "$service is not enabled"
     systemctl -q is-active "$service" || fail "$service is not active"
