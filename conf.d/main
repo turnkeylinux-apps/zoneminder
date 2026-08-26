@@ -1,11 +1,11 @@
 #!/bin/bash -ex
 
-install() {
+apt_install() {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get -y \
         -o DPkg::Options::=--force-confdef \
         -o DPkg::Options::=--force-confold \
-        install $@
+        install "$@"
 }
 
 # remove unrequired webcp icons (all except those named)
@@ -27,7 +27,7 @@ ln -s /usr/local/bin/systemctl /usr/bin
 
 # Install ZoneMinder from Debian Trixie. The temporary systemctl wrapper keeps
 # the package configuration path compatible with the build environment.
-install zoneminder
+apt_install zoneminder
 a2enconf zoneminder
 rm /usr/bin/systemctl
 mv /usr/bin/systemctl.orig /usr/bin/systemctl
