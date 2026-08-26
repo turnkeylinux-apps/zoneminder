@@ -36,6 +36,14 @@ To install a reported update from the command line::
 
     apt-get update
     apt-get install zoneminder
+    zmupdate.pl
+    systemctl restart zoneminder
+    systemctl --no-pager --full status zoneminder
+    curl -kfsS https://127.0.0.1/zm/ >/dev/null
+
+``zmupdate.pl`` applies any database changes shipped by the new package. Run
+these commands together so the service restart and HTTPS request confirm that
+both the updated database and application are usable.
 
 Credentials *(passwords set at first boot)*
 -------------------------------------------

@@ -35,7 +35,10 @@ mv /usr/bin/systemctl.orig /usr/bin/systemctl
 service apache2 stop
 
 service mysql start
-mysql --batch -e "SELECT 1 FROM zm.Users WHERE Username='admin';"
+mysql --batch < /usr/share/zoneminder/db/zm_create.sql
+# zmpass is replaced at first boot. ALL privileges are required by zmupdate.pl
+# when a package update includes a database schema migration.
+mysql --batch -e "GRANT ALL PRIVILEGES ON zm.* TO 'zmuser'@'localhost' IDENTIFIED BY 'zmpass';"
 mysql --batch -e "UPDATE zm.Config SET Value=1 WHERE Name='ZM_OPT_USE_AUTH';"
 
 service mysql stop
@@ -52,9 +55,23 @@ adduser www-data video
 
 install -d /usr/local/share/turnkey-zoneminder
 installed_version=$(dpkg-query -W -f='${Version}' zoneminder)
+installed_provenance=$(apt-cache madison zoneminder | awk -F '|' -v version="$installed_version" '
+    {
+        package_version=$2
+        source=$3
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", package_version)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", source)
+        if (package_version == version && source ~ / (trixie|trixie-updates|trixie-security)\//) {
+            print source
+            exit
+        }
+    }
+')
+[ -n "$installed_provenance" ]
 cat > /usr/local/share/turnkey-zoneminder/source <<EOF
 package_source=Debian Trixie repositories
 installed_version=$installed_version
+installed_provenance=$installed_provenance
 repository_suite=trixie
 integrity=Debian archive signature verification
 EOF

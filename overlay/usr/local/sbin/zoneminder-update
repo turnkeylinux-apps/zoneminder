@@ -10,20 +10,31 @@ SOURCE_RECORD=${SOURCE_RECORD:-/usr/local/share/turnkey-zoneminder/source}
 apt-get update -qq
 installed=$(dpkg-query -W -f='${Version}' zoneminder)
 candidate=$(apt-cache policy zoneminder | sed -n 's/^[[:space:]]*Candidate: //p')
-index_targets=$(apt-get indextargets --format '$(IDENTIFIER)|$(SUITE)|$(RELEASE)|$(SITE)')
+candidate_provenance=$(apt-cache madison zoneminder | awk -F '|' -v version="$candidate" '
+    {
+        package_version=$2
+        source=$3
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", package_version)
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", source)
+        if (package_version == version && source ~ / (trixie|trixie-updates|trixie-security)\//) {
+            print source
+            exit
+        }
+    }
+')
 [ -s "$SOURCE_RECORD" ]
 [ -n "$candidate" ] && [ "$candidate" != "(none)" ] || {
     echo "no ZoneMinder candidate is available from configured repositories" >&2
     exit 1
 }
-printf '%s\n' "$index_targets" |
-    grep -Eq '^(Packages|Translation-[^|]+)\|(trixie|trixie-updates|trixie-security)\|' || {
-        echo "no eligible Debian Trixie package index is configured" >&2
-        exit 1
-    }
+[ -n "$candidate_provenance" ] || {
+    echo "ZoneMinder candidate is not provided by a Debian Trixie package index" >&2
+    exit 1
+}
 
 echo "installed=$installed"
 echo "candidate=$candidate"
+echo "candidate_provenance=$candidate_provenance"
 echo "channel=Debian Trixie repositories"
 echo "metadata_signature_verification=apt-get-update-passed"
 if dpkg --compare-versions "$candidate" gt "$installed"; then

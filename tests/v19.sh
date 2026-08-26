@@ -11,6 +11,21 @@ fail() {
     exit 1
 }
 
+trixie_provenance() {
+    apt-cache madison zoneminder | awk -F '|' -v version="$1" '
+        {
+            package_version=$2
+            source=$3
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", package_version)
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "", source)
+            if (package_version == version && source ~ / (trixie|trixie-updates|trixie-security)\//) {
+                print source
+                exit
+            }
+        }
+    '
+}
+
 cleanup() {
     if [ -n "$MONITOR_ID" ]; then
         mysql zm -e "DELETE FROM Monitors WHERE Id=$MONITOR_ID" >/dev/null 2>&1 || true
@@ -26,6 +41,10 @@ grep -qx 'integrity=Debian archive signature verification' "$SOURCE_RECORD" || f
 installed=$(dpkg-query -W -f='${Version}' zoneminder)
 recorded=$(sed -n 's/^installed_version=//p' "$SOURCE_RECORD")
 [ -n "$installed" ] && [ "$installed" = "$recorded" ] || fail "installed package does not match source record"
+installed_provenance=$(trixie_provenance "$installed")
+[ -n "$installed_provenance" ] || fail "installed package has no Debian Trixie provenance"
+grep -Fqx "installed_provenance=$installed_provenance" "$SOURCE_RECORD" ||
+    fail "installed package provenance does not match source record"
 for service in apache2 mariadb zoneminder postfix; do
     systemctl -q is-enabled "$service" || fail "$service is not enabled"
     systemctl -q is-active "$service" || fail "$service is not active"
@@ -86,6 +105,10 @@ update_check=$(zoneminder-update --check)
 printf '%s\n' "$update_check" | grep -Fqx "installed=$installed" || fail "updater lost installed version"
 candidate=$(printf '%s\n' "$update_check" | sed -n 's/^candidate=//p')
 [ -n "$candidate" ] && [ "$candidate" != "(none)" ] || fail "updater found no Debian candidate"
+candidate_provenance=$(printf '%s\n' "$update_check" | sed -n 's/^candidate_provenance=//p')
+[ -n "$candidate_provenance" ] || fail "updater found no candidate provenance"
+[ "$candidate_provenance" = "$(trixie_provenance "$candidate")" ] ||
+    fail "candidate provenance is not a Debian Trixie package index"
 printf '%s\n' "$update_check" | grep -qx 'channel=Debian Trixie repositories' || fail "updater channel is invalid"
 printf '%s\n' "$update_check" | grep -qx 'metadata_signature_verification=apt-get-update-passed' || fail "updater metadata verification is missing"
 printf '%s\n' "$update_check" | grep -Eq '^status=(up-to-date|update-available)$' || fail "updater status is invalid"
@@ -103,7 +126,7 @@ package_source=Debian Trixie repositories
 installed_version=$installed
 runtime_checks=HTTPS console, API admin login, disabled monitor create/read, MariaDB persistence, daemon restart, Adminer, Webmin, and cleanup passed
 updater_command=zoneminder-update --check
-updater_result=signed apt metadata accepted; verified installed version $installed and Debian candidate $candidate
+updater_result=signed apt metadata accepted; verified installed version $installed from $installed_provenance and Debian candidate $candidate from $candidate_provenance
 updater_channel=Debian Trixie repositories
 integrity_evidence=apt-get update accepted Debian archive signatures and an eligible Trixie index
 EOF
