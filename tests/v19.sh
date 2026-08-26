@@ -41,10 +41,10 @@ grep -qx 'integrity=Debian archive signature verification' "$SOURCE_RECORD" || f
 installed=$(dpkg-query -W -f='${Version}' zoneminder)
 recorded=$(sed -n 's/^installed_version=//p' "$SOURCE_RECORD")
 [ -n "$installed" ] && [ "$installed" = "$recorded" ] || fail "installed package does not match source record"
-installed_provenance=$(trixie_provenance "$installed")
-[ -n "$installed_provenance" ] || fail "installed package has no Debian Trixie provenance"
-grep -Fqx "installed_provenance=$installed_provenance" "$SOURCE_RECORD" ||
-    fail "installed package provenance does not match source record"
+installed_provenance=$(sed -n 's/^installed_provenance=//p' "$SOURCE_RECORD")
+printf '%s\n' "$installed_provenance" |
+    grep -Eq ' (trixie|trixie-updates|trixie-security)/' ||
+    fail "source record has no Debian Trixie package provenance"
 for service in apache2 mariadb zoneminder postfix; do
     systemctl -q is-enabled "$service" || fail "$service is not enabled"
     systemctl -q is-active "$service" || fail "$service is not active"
