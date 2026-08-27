@@ -41,6 +41,12 @@ curl -kfsS -L \
     --data-urlencode username=admin \
     --data-urlencode "password=$TKL_TEST_APP_PASS" \
     'https://127.0.0.1/zm/?view=login' \
+    -o "$TEST_TMPDIR/web-login-response"
+grep -q 'id="page"' "$TEST_TMPDIR/web-login-response" || fail "web login did not establish a session"
+curl -kfsS -L \
+    -c "$TEST_TMPDIR/web-cookie" \
+    -b "$TEST_TMPDIR/web-cookie" \
+    'https://127.0.0.1/zm/?view=console' \
     -o "$TEST_TMPDIR/web-console"
 grep -q 'id="consoleTable"' "$TEST_TMPDIR/web-console" || fail "web console login failed"
 
