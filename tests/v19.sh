@@ -46,9 +46,9 @@ grep -q 'id="page"' "$TEST_TMPDIR/web-login-response" || fail "web login did not
 curl -kfsS -L \
     -c "$TEST_TMPDIR/web-cookie" \
     -b "$TEST_TMPDIR/web-cookie" \
-    'https://127.0.0.1/zm/?view=console' \
-    -o "$TEST_TMPDIR/web-console"
-grep -q 'id="consoleTable"' "$TEST_TMPDIR/web-console" || fail "web console login failed"
+    'https://127.0.0.1/zm/?view=options' \
+    -o "$TEST_TMPDIR/web-options-response"
+grep -q 'id="optionsContainer"' "$TEST_TMPDIR/web-options-response" || fail "authenticated web session failed"
 
 export FIXTURE
 MONITOR_ID=$(python3 <<'PY'
