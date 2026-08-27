@@ -1,11 +1,25 @@
 #!/bin/bash -ex
 
+ZM_VERSION=1.38.4+trixie1
+ZM_PACKAGE_URL=https://zmrepo.zoneminder.com/debian/release-1.38/trixie/zoneminder_1.38.4+trixie1_amd64.deb
+ZM_PACKAGE_SHA256=4828e9a0e86e2015701571cc443d37aae5e43fd4e270759c3f28463ae135f12e
+ZM_KEY_FINGERPRINT=E148DCEBF90919B49C68F056A8C670C86F88B031
+
 apt_install() {
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get -y \
         -o DPkg::Options::=--force-confdef \
         -o DPkg::Options::=--force-confold \
         install "$@"
+}
+
+restore_systemctl() {
+    if [ -e /usr/bin/systemctl.orig ]; then
+        if [ -e /usr/bin/systemctl ] || [ -L /usr/bin/systemctl ]; then
+            rm /usr/bin/systemctl
+        fi
+        mv /usr/bin/systemctl.orig /usr/bin/systemctl
+    fi
 }
 
 # remove unrequired webcp icons (all except those named)
@@ -22,15 +36,23 @@ service apache2 start
 # Temporarily replace systemctl with our wrapper
 # since the zoneminder package uses a hardcoded path
 # to call it
+[ ! -e /usr/bin/systemctl.orig ]
+trap restore_systemctl EXIT
 mv /usr/bin/systemctl /usr/bin/systemctl.orig
 ln -s /usr/local/bin/systemctl /usr/bin
 
-# Install ZoneMinder from Debian Trixie. The temporary systemctl wrapper keeps
-# the package configuration path compatible with the build environment.
-apt_install zoneminder
+# Install the exact verified ZoneMinder package. The retained upstream apt
+# repository supplies dependencies and supervised updates.
+curl -fsSL "$ZM_PACKAGE_URL" -o /tmp/zoneminder.deb
+printf '%s  %s\n' "$ZM_PACKAGE_SHA256" /tmp/zoneminder.deb | sha256sum -c -
+apt_install /tmp/zoneminder.deb
+[ "$(dpkg-query -W -f='${Version}' zoneminder)" = "$ZM_VERSION" ]
+candidate=$(apt-cache policy zoneminder | sed -n 's/^[[:space:]]*Candidate: //p')
+[ "$candidate" = "$ZM_VERSION" ]
 a2enconf zoneminder
-rm /usr/bin/systemctl
-mv /usr/bin/systemctl.orig /usr/bin/systemctl
+restore_systemctl
+trap - EXIT
+rm /tmp/zoneminder.deb
 
 service apache2 stop
 
@@ -53,21 +75,7 @@ chown root:www-data /etc/zm/zm.conf
 #Add www-data to video
 adduser www-data video
 
-install -d /usr/local/share/turnkey-zoneminder
-installed_version=$(dpkg-query -W -f='${Version}' zoneminder)
-installed_provenance=$(apt-cache madison zoneminder | awk -F '|' -v version="$installed_version" '
-    {
-        package_version=$2
-        source=$3
-        gsub(/^[[:space:]]+|[[:space:]]+$/, "", package_version)
-        gsub(/^[[:space:]]+|[[:space:]]+$/, "", source)
-        if (package_version == version && source ~ / (trixie|trixie-updates|trixie-security)\//) {
-            print source
-            exit
-        }
-    }
-')
-[ -n "$installed_provenance" ]
+/usr/bin/install -d /usr/local/share/turnkey-zoneminder
 cat > /usr/local/share/turnkey-zoneminder/source <<EOF
 package_source=Debian Trixie repositories
 installed_version=$installed_version

@@ -1,6 +1,9 @@
 #!/bin/bash -e
 
-SOURCE_RECORD=${SOURCE_RECORD:-/usr/local/share/turnkey-zoneminder/source}
+set -o pipefail
+
+EXPECTED_FINGERPRINT=E148DCEBF90919B49C68F056A8C670C86F88B031
+SOURCE_RECORD=/usr/local/share/turnkey-zoneminder/source
 
 [ "${1:-}" = --check ] || {
     echo "usage: zoneminder-update --check" >&2
@@ -23,22 +26,22 @@ candidate_provenance=$(apt-cache madison zoneminder | awk -F '|' -v version="$ca
     }
 ')
 [ -s "$SOURCE_RECORD" ]
-[ -n "$candidate" ] && [ "$candidate" != "(none)" ] || {
-    echo "no ZoneMinder candidate is available from configured repositories" >&2
-    exit 1
-}
-[ -n "$candidate_provenance" ] || {
-    echo "ZoneMinder candidate is not provided by a Debian Trixie package index" >&2
-    exit 1
-}
+case "$candidate" in
+    1.38.*) ;;
+    *)
+        echo "ZoneMinder stable-channel candidate is unavailable or invalid: $candidate" >&2
+        exit 1
+        ;;
+esac
 
 echo "installed=$installed"
 echo "candidate=$candidate"
-echo "candidate_provenance=$candidate_provenance"
-echo "channel=Debian Trixie repositories"
-echo "metadata_signature_verification=apt-get-update-passed"
-if dpkg --compare-versions "$candidate" gt "$installed"; then
+echo "channel=official release-1.38 trixie"
+if dpkg --compare-versions "$candidate" eq "$installed"; then
+    echo "status=up-to-date"
+elif dpkg --compare-versions "$candidate" gt "$installed"; then
     echo "status=update-available"
 else
-    echo "status=up-to-date"
+    echo "ZoneMinder stable channel would downgrade $installed to $candidate" >&2
+    exit 1
 fi

@@ -41,6 +41,8 @@ def main():
     password_hash = subprocess.run(
         ['php', '-r', 'echo password_hash(getenv("ZM_ADMIN_PASS"), PASSWORD_BCRYPT);'],
         env=hash_env, check=True, capture_output=True, text=True).stdout
+    if not password_hash.startswith(('$2a$', '$2b$', '$2y$')):
+        raise RuntimeError('PHP did not return a bcrypt password hash')
     m = MySQL()
     m.execute('UPDATE zm.Users SET Password=%s, APIEnabled=1 '
               'WHERE Username=\"admin\";',
