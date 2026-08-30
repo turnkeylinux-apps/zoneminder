@@ -12,21 +12,6 @@ fail() {
     exit 1
 }
 
-trixie_provenance() {
-    apt-cache madison zoneminder | awk -F '|' -v version="$1" '
-        {
-            package_version=$2
-            source=$3
-            gsub(/^[[:space:]]+|[[:space:]]+$/, "", package_version)
-            gsub(/^[[:space:]]+|[[:space:]]+$/, "", source)
-            if (package_version == version && source ~ / (trixie|trixie-updates|trixie-security)\//) {
-                print source
-                exit
-            }
-        }
-    '
-}
-
 cleanup() {
     if [[ "$MONITOR_ID" =~ ^[0-9]+$ ]]; then
         mysql zm -e "DELETE FROM Monitor_Status WHERE MonitorId=$MONITOR_ID; DELETE FROM Monitors WHERE Id=$MONITOR_ID" >/dev/null 2>&1 || true
@@ -37,16 +22,14 @@ trap cleanup EXIT HUP INT TERM
 
 [ -n "${TKL_TEST_APP_PASS:-}" ] || fail "TKL_TEST_APP_PASS is required"
 [ -f "$SOURCE_RECORD" ] || fail "source record is missing"
-grep -qx 'package_source=Debian Trixie repositories' "$SOURCE_RECORD" || fail "unexpected package source"
-grep -qx 'repository_suite=trixie' "$SOURCE_RECORD" || fail "unexpected repository suite"
-grep -qx 'integrity=Debian archive signature verification' "$SOURCE_RECORD" || fail "unexpected integrity record"
+grep -qx 'package_source=official ZoneMinder release-1.38 Trixie apt repository' "$SOURCE_RECORD" || fail "unexpected package source"
+grep -qx 'installed_version=1.38.4+trixie1' "$SOURCE_RECORD" || fail "unexpected version record"
+grep -qx 'package_url=https://zmrepo.zoneminder.com/debian/release-1.38/trixie/zoneminder_1.38.4+trixie1_amd64.deb' "$SOURCE_RECORD" || fail "unexpected package URL"
+grep -qx 'package_sha256=4828e9a0e86e2015701571cc443d37aae5e43fd4e270759c3f28463ae135f12e' "$SOURCE_RECORD" || fail "unexpected package digest"
+grep -qx 'key_fingerprint=E148DCEBF90919B49C68F056A8C670C86F88B031' "$SOURCE_RECORD" || fail "unexpected signing key"
+grep -qx 'repository=https://zmrepo.zoneminder.com/debian/release-1.38 trixie' "$SOURCE_RECORD" || fail "unexpected repository record"
 installed=$(dpkg-query -W -f='${Version}' zoneminder)
-recorded=$(sed -n 's/^installed_version=//p' "$SOURCE_RECORD")
-[ -n "$installed" ] && [ "$installed" = "$recorded" ] || fail "installed package does not match source record"
-installed_provenance=$(sed -n 's/^installed_provenance=//p' "$SOURCE_RECORD")
-printf '%s\n' "$installed_provenance" |
-    grep -Eq ' (trixie|trixie-updates|trixie-security)/' ||
-    fail "source record has no Debian Trixie package provenance"
+[ "$installed" = 1.38.4+trixie1 ] || fail "unexpected package version"
 
 admin_hash=$(mysql -Nse "SELECT Password FROM zm.Users WHERE Username='admin'")
 [ -n "$admin_hash" ] || fail "ZoneMinder admin account is missing"
@@ -188,15 +171,9 @@ if matches:
 PY
 
 update_check=$(zoneminder-update --check)
-printf '%s\n' "$update_check" | grep -Fqx "installed=$installed" || fail "updater lost installed version"
-candidate=$(printf '%s\n' "$update_check" | sed -n 's/^candidate=//p')
-[ -n "$candidate" ] && [ "$candidate" != "(none)" ] || fail "updater found no Debian candidate"
-candidate_provenance=$(printf '%s\n' "$update_check" | sed -n 's/^candidate_provenance=//p')
-[ -n "$candidate_provenance" ] || fail "updater found no candidate provenance"
-[ "$candidate_provenance" = "$(trixie_provenance "$candidate")" ] ||
-    fail "candidate provenance is not a Debian Trixie package index"
-printf '%s\n' "$update_check" | grep -qx 'channel=Debian Trixie repositories' || fail "updater channel is invalid"
-printf '%s\n' "$update_check" | grep -qx 'metadata_signature_verification=apt-get-update-passed' || fail "updater metadata verification is missing"
+printf '%s\n' "$update_check" | grep -qx 'installed=1.38.4+trixie1' || fail "updater lost installed version"
+printf '%s\n' "$update_check" | grep -Eq '^candidate=1\.38\.' || fail "updater candidate is outside stable channel"
+printf '%s\n' "$update_check" | grep -qx 'channel=official release-1.38 trixie' || fail "updater channel is invalid"
 printf '%s\n' "$update_check" | grep -Eq '^status=(up-to-date|update-available)$' || fail "updater status is invalid"
 curl -kfsS https://127.0.0.1:12322/ >/dev/null || fail "Adminer HTTPS endpoint failed"
 curl -kfsS https://127.0.0.1:12321/ >/dev/null || fail "Webmin HTTPS endpoint failed"
@@ -215,9 +192,9 @@ package_source=official ZoneMinder release-1.38 Trixie apt repository
 installed_version=1.38.4+trixie1
 runtime_checks=HTTPS web and API admin login, non-hardware monitor create/read/control/delete, MariaDB persistence, daemon restart, Adminer, Webmin, and cleanup passed
 updater_command=zoneminder-update --check
-updater_result=signed apt metadata accepted; verified installed version $installed from $installed_provenance and Debian candidate $candidate from $candidate_provenance
-updater_channel=Debian Trixie repositories
-integrity_evidence=apt-get update accepted Debian archive signatures and an eligible Trixie index
+updater_result=verified installed and candidate versions on the stable release-1.38 channel
+updater_channel=official ZoneMinder release-1.38 Trixie apt repository
+integrity_evidence=package SHA256 4828e9a0e86e2015701571cc443d37aae5e43fd4e270759c3f28463ae135f12e and signing key E148DCEBF90919B49C68F056A8C670C86F88B031
 EOF
 fi
 

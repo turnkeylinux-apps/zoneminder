@@ -74,9 +74,10 @@ adduser www-data video
 
 /usr/bin/install -d /usr/local/share/turnkey-zoneminder
 cat > /usr/local/share/turnkey-zoneminder/source <<EOF
-package_source=Debian Trixie repositories
-installed_version=$installed_version
-installed_provenance=$installed_provenance
-repository_suite=trixie
-integrity=Debian archive signature verification
+package_source=official ZoneMinder release-1.38 Trixie apt repository
+installed_version=$ZM_VERSION
+package_url=$ZM_PACKAGE_URL
+package_sha256=$ZM_PACKAGE_SHA256
+key_fingerprint=$ZM_KEY_FINGERPRINT
+repository=https://zmrepo.zoneminder.com/debian/release-1.38 trixie
 EOF
