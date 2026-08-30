@@ -58,6 +58,8 @@ service apache2 stop
 
 service mysql start
 mysql --batch -e "SELECT 1 FROM zm.Users WHERE Username='admin';"
+# Match the packaged database user to zm.conf until firstboot rotates both.
+mysql --batch -e "ALTER USER 'zmuser'@'localhost' IDENTIFIED BY 'zmpass';"
 mysql --batch -e "UPDATE zm.Config SET Value=1 WHERE Name='ZM_OPT_USE_AUTH';"
 
 service mysql stop
