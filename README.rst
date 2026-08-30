@@ -11,7 +11,8 @@ and on top of that:
 
 - ZoneMinder configurations:
 
-  - ZoneMinder installed from the Debian Trixie repositories.
+  - ZoneMinder installed from the official upstream ``release-1.38`` Trixie
+    repository.
 
 - SSL support out of the box.
 - `Adminer`_ administration frontend for MySQL (listening on port
@@ -28,7 +29,7 @@ ZoneMinder Package Updates
 --------------------------
 
 To compare the installed ZoneMinder package with the version available from
-the configured Debian Trixie repositories::
+the official upstream ``release-1.38`` Trixie repository::
 
     zoneminder-update --check
 
