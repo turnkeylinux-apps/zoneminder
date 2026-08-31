@@ -1,3 +1,16 @@
+turnkey-zoneminder-19.0 (1) turnkey; urgency=low
+
+  * Port to Debian 13 (Trixie).
+  * Install ZoneMinder 1.38.4 from upstream's signed release-1.38 Trixie
+    package channel, superseding Debian's older package to include current
+    stable security fixes.
+  * Update firstboot credentials, PHP timezone discovery, and the standard apt
+    update check.
+  * Add v19 acceptance coverage for authenticated monitor management,
+    persistence, services, and management endpoints.
+
+ -- TurnKey GNU/Linux release team <release@turnkeylinux.org>  Tue, 25 Aug 2026 00:00:00 +0000
+
 turnkey-zoneminder-18.0 (1) turnkey; urgency=low
 
   * Install latest ZoneMinder v1.36.33.

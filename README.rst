@@ -11,12 +11,8 @@ and on top of that:
 
 - ZoneMinder configurations:
 
-  - ZoneMinder installed from 3rd party Debian apt repository.
-  - ZoneMinder package pinned (security and convenience).
-
-    **Security note**: Updates to ZoneMinder may require supervision so
-    they **ARE NOT** configured to install automatically. See below for
-    updating ZoneMinder.
+  - ZoneMinder installed from the official upstream ``release-1.38`` Trixie
+    repository.
 
 - SSL support out of the box.
 - `Adminer`_ administration frontend for MySQL (listening on port
@@ -29,14 +25,26 @@ and on top of that:
 are added, this is unlikely to be a significant issue to most users due
 to the fact most people will add monitors soon after install.
 
-Supervised Manual Zoneminder Update
------------------------------------
+ZoneMinder Package Updates
+--------------------------
 
-To upgrade to the latest Debian backports version of ZoneMinder from the
-command line::
+To compare the installed ZoneMinder package with the version available from
+the official upstream ``release-1.38`` Trixie repository::
+
+    zoneminder-update --check
+
+To install a reported update from the command line::
 
     apt-get update
     apt-get install zoneminder
+    zmupdate.pl
+    systemctl restart zoneminder
+    systemctl --no-pager --full status zoneminder
+    curl -kfsS https://127.0.0.1/zm/ >/dev/null
+
+``zmupdate.pl`` applies any database changes shipped by the new package. Run
+these commands together so the service restart and HTTPS request confirm that
+both the updated database and application are usable.
 
 Credentials *(passwords set at first boot)*
 -------------------------------------------

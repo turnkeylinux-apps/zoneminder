@@ -6,9 +6,10 @@ Option:
 
 import sys
 import getopt
+from pathlib import Path
 
 import subprocess
-from libinithooks.dialog_wrapper import Dialog
+
 
 def usage(s=None):
     if s:
@@ -24,7 +25,7 @@ def main():
     except getopt.GetoptError as e:
         usage(e)
 
-    password = ""
+    timezone = ""
     for opt, val in opts:
         if opt in ('-h', '--help'):
             usage()
@@ -33,8 +34,22 @@ def main():
 
     if not timezone:
         timezone = 'Etc/UTC'
+    zoneinfo_root = Path('/usr/share/zoneinfo').resolve()
+    timezone_path = (zoneinfo_root / timezone).resolve()
+    try:
+        timezone_path.relative_to(zoneinfo_root)
+    except ValueError:
+        usage("invalid timezone")
+    if Path(timezone).is_absolute() or not timezone_path.is_file():
+        usage("invalid timezone")
+    php_ini = list(Path('/etc/php').glob('*/apache2/php.ini'))
+    if len(php_ini) != 1:
+        usage("unable to identify Apache PHP configuration")
     text = "date.timezone = " + timezone
-    subprocess.run(['sed', '-i', 's|.*date.*timezone.*=.*|%s|g' % text, '/etc/php/7.3/apache2/php.ini'])    
-    subprocess.run(['service', 'apache2', 'restart'])
+    subprocess.run(['sed', '-i', 's|.*date.*timezone.*=.*|%s|g' % text,
+                    str(php_ini[0])], check=True)
+    subprocess.run(['service', 'apache2', 'restart'], check=True)
+
+
 if __name__ == "__main__":
     main()
